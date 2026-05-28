@@ -16,39 +16,52 @@ Self-contained — no external tools required. All sync logic is implemented in 
 ## Requirements
 
 - OpenCPN 5.2+ (plugin API 1.18)
-- [Nix](https://nixos.org/download/) with flakes enabled
-- [direnv](https://direnv.net/docs/installation.html)
+- CMake 3.18+
+- libcurl
+- wxWidgets (headers only — OpenCPN provides the library at runtime)
+- C++ compiler with C++17 support
 
-All other dependencies (CMake, wxWidgets, libcurl, clang-tools) are provided by the Nix dev shell.
+All third-party source dependencies (tinyxml2, nlohmann/json, OpenCPN plugin header) are vendored in the repository.
 
 ## Build & Install
 
+### Option A — Nix (recommended)
+
+Nix provides a fully reproducible dev shell with all dependencies pinned.
+
 ```bash
-git clone <repo>
-cd EncManaged_pi
+# Install Nix with flakes enabled, then:
+direnv allow        # auto-activates dev shell via .envrc
+# or manually: nix develop
 
-# Activate Nix dev shell (one-time direnv allow)
-direnv allow
-
-# Fetch OpenCPN plugin header + third-party headers (one-time)
-curl -Lo include/ocpn_plugin.h \
-  https://raw.githubusercontent.com/OpenCPN/OpenCPN/Release_5.8.4/include/ocpn_plugin.h
-
-curl -Lo third_party/tinyxml2/tinyxml2.h \
-  https://raw.githubusercontent.com/leethomason/tinyxml2/master/tinyxml2.h
-curl -Lo third_party/tinyxml2/tinyxml2.cpp \
-  https://raw.githubusercontent.com/leethomason/tinyxml2/master/tinyxml2.cpp
-
-curl -Lo third_party/nlohmann/json.hpp \
-  https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp
-
-# Configure + build
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-
-# Install to OpenCPN plugins directory
 cmake --install build
 ```
+
+### Option B — Homebrew (macOS)
+
+```bash
+brew install cmake pkg-config curl wxwidgets
+
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --install build
+```
+
+### Option C — apt (Debian / Ubuntu)
+
+```bash
+sudo apt install cmake pkg-config libcurl4-openssl-dev libwxgtk3.2-dev build-essential
+
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+sudo cmake --install build
+```
+
+> For older Ubuntu (< 23.04) replace `libwxgtk3.2-dev` with `libwxgtk3.0-gtk3-dev`.
+
+---
 
 `cmake --install` copies the plugin library and registers it with OpenCPN by writing three files to OpenCPN's plugin config directory:
 
