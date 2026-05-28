@@ -35,7 +35,7 @@ jobs:
             pkg_suffix: linux-x86_64
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
@@ -104,7 +104,7 @@ jobs:
           tar -czf "${TARBALL}" -C pkg .
           echo "TARBALL=${TARBALL}" >> $GITHUB_ENV
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.pkg_suffix }}
           path: ${{ env.TARBALL }}
@@ -115,7 +115,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           merge-multiple: true
 
