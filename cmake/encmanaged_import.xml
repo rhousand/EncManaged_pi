@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin version="1">
+    <name>EncManaged</name>
+    <version>0.1.0</version>
+    <release>0</release>
+    <summary>Automated NOAA ENC chart sync</summary>
+    <api-version>1.18</api-version>
+    <open-source>true</open-source>
+    <is-imported>true</is-imported>
+    <author>local</author>
+    <source>local</source>
+    <info-url></info-url>
+    <description>EncManaged syncs NOAA Electronic Navigational Charts automatically.</description>
+    <target>darwin</target>
+    <target-version></target-version>
+    <target-arch></target-arch>
+    <tarball-url></tarball-url>
+    <tarball-checksum></tarball-checksum>
+</plugin>

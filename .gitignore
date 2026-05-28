@@ -1,0 +1,11 @@
+build/
+CLAUDE.md
+docs/
+.claude/
+
+# Nix
+.direnv/
+result
+
+# macOS
+.DS_Store
