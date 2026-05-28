@@ -23,6 +23,19 @@ Self-contained — no external tools required. All sync logic is implemented in 
 
 All third-party source dependencies (tinyxml2, nlohmann/json, OpenCPN plugin header) are vendored in the repository.
 
+## Installing from a Release
+
+Pre-built tarballs for macOS (arm64, x86_64) and Linux (x86_64) are published on the [Releases](https://github.com/rhousand/EncManaged_pi/releases) page.
+
+1. Download the tarball for your platform
+2. In OpenCPN: **Options → Plugins → Import plugin...**
+3. Select the downloaded tarball
+4. Restart OpenCPN and enable the plugin
+
+The imported plugin supports **Reinstall** from within OpenCPN's plugin manager.
+
+---
+
 ## Build & Install
 
 ### Option A — Nix (recommended)

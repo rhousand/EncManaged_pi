@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.pkg_suffix }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            arch: arm64
+            target: darwin
+            lib: encmanaged_pi.dylib
+            pkg_suffix: darwin-arm64
+
+          - os: macos-13
+            arch: x86_64
+            target: darwin
+            lib: encmanaged_pi.dylib
+            pkg_suffix: darwin-x86_64
+
+          - os: ubuntu-24.04
+            arch: x86_64
+            target: linux-gtk3
+            lib: encmanaged_pi.so
+            pkg_suffix: linux-x86_64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install cmake pkg-config curl wxwidgets
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            cmake pkg-config libcurl4-openssl-dev \
+            libwxgtk3.2-dev build-essential
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --target encmanaged_pi
+
+      - name: Package
+        shell: bash
+        run: |
+          TAG=${{ github.ref_name }}
+          VERSION=${TAG#v}
+          TARBALL=encmanaged_pi-${VERSION}-${{ matrix.pkg_suffix }}.tar.gz
+          TARBALL_URL=https://github.com/${{ github.repository }}/releases/download/${TAG}/${TARBALL}
+
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            mkdir -p pkg/Contents/PlugIns
+            cp build/${{ matrix.lib }} pkg/Contents/PlugIns/
+            if [ -d data ] && [ -n "$(ls -A data 2>/dev/null)" ]; then
+              mkdir -p "pkg/Contents/SharedSupport/encmanaged_pi"
+              cp -r data/. "pkg/Contents/SharedSupport/encmanaged_pi/"
+            fi
+          else
+            mkdir -p pkg/lib/opencpn
+            cp build/${{ matrix.lib }} pkg/lib/opencpn/
+            if [ -d data ] && [ -n "$(ls -A data 2>/dev/null)" ]; then
+              mkdir -p pkg/share/opencpn/plugins/encmanaged_pi
+              cp -r data/. pkg/share/opencpn/plugins/encmanaged_pi/
+            fi
+          fi
+
+          cat > pkg/metadata.xml << XMLEOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <plugin version="1">
+              <name>EncManaged</name>
+              <version>${VERSION}</version>
+              <release>0</release>
+              <summary>Automated NOAA ENC chart sync</summary>
+              <api-version>1.18</api-version>
+              <open-source>true</open-source>
+              <is-imported>true</is-imported>
+              <author>rhousand</author>
+              <source>https://github.com/${{ github.repository }}</source>
+              <info-url>https://github.com/${{ github.repository }}</info-url>
+              <description>EncManaged syncs NOAA Electronic Navigational Charts automatically.</description>
+              <target>${{ matrix.target }}</target>
+              <target-version></target-version>
+              <target-arch>${{ matrix.arch }}</target-arch>
+              <tarball-url>${TARBALL_URL}</tarball-url>
+              <tarball-checksum></tarball-checksum>
+          </plugin>
+          XMLEOF
+
+          tar -czf "${TARBALL}" -C pkg .
+          echo "TARBALL=${TARBALL}" >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.pkg_suffix }}
+          path: ${{ env.TARBALL }}
+          retention-days: 1
+
+  release:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: "*.tar.gz"
