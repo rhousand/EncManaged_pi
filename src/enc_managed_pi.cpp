@@ -148,7 +148,15 @@ void EncManagedPlugin::ShowPreferencesDialog(wxWindow* parent) {
     s.autoRefresh    = m_autoRefresh;
     s.scheduleHours  = m_scheduleHours;
     s.workers        = m_workers;
-    s.lastSyncStatus = m_lastSyncStatus.IsEmpty() ? "(no sync yet)" : m_lastSyncStatus;
+    if (m_lastSyncEpoch > 0) {
+        std::time_t t = (std::time_t)m_lastSyncEpoch;
+        char buf[32];
+        std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", std::localtime(&t));
+        wxString detail = m_lastSyncStatus.IsEmpty() ? "(no sync yet)" : m_lastSyncStatus;
+        s.lastSyncStatus = wxString(buf) + "\n" + detail;
+    } else {
+        s.lastSyncStatus = m_lastSyncStatus.IsEmpty() ? "(no sync yet)" : m_lastSyncStatus;
+    }
     s.syncLog        = m_syncLog;
     s.syncRunning    = m_engine && m_engine->IsRunning();
 
