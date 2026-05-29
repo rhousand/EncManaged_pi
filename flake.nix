@@ -13,7 +13,7 @@
           packages = with pkgs; [
             cmake
             curl
-            (if pkgs.stdenv.isDarwin then pkgs.wxmac else pkgs.wxGTK32)
+            wxwidgets_3_2
             pkg-config
             clang-tools
           ];
