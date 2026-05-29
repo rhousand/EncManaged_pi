@@ -25,7 +25,7 @@ All third-party source dependencies (tinyxml2, nlohmann/json, OpenCPN plugin hea
 
 ## Installing from a Release
 
-Pre-built tarballs for macOS (arm64, x86_64) and Linux (x86_64) are published on the [Releases](https://github.com/rhousand/EncManaged_pi/releases) page.
+Pre-built tarballs for macOS (arm64) and Linux (x86_64, aarch64) are published on the [Releases](https://github.com/rhousand/EncManaged_pi/releases) page.
 
 1. Download the tarball for your platform
 2. In OpenCPN: **Options → Plugins → Import plugin...**
@@ -86,6 +86,10 @@ sudo cmake --install build
 
 Without these files, OpenCPN silently drops the plugin from its internal array when the Plugins tab is opened and it never appears in the list.
 
+## Screenshots
+
+![EncManaged Preferences](images/encManaged-preferences.png)
+
 ## Setup
 
 1. Restart OpenCPN after install
@@ -115,6 +119,6 @@ After each sync, scan for new charts via **Tools → Charts → Scan for new/upd
 
 | Platform | Status | Notes |
 |----------|--------|-------|
-| macOS | Primary | Tested on arm64 + x86_64 |
-| Linux | Supported | wxGTK required |
+| macOS | Primary | Tested on arm64 (Apple Silicon) |
+| Linux | Supported | x86_64 and aarch64 (Raspberry Pi 5) |
 | Windows | Not scoped | OpenCPN/wxWidgets Windows build not tested |
