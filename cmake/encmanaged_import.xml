@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin version="1">
     <name>EncManaged</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <release>0</release>
     <summary>Automated NOAA ENC chart sync</summary>
     <api-version>1.18</api-version>
