@@ -22,17 +22,17 @@ jobs:
             lib: encmanaged_pi.dylib
             pkg_suffix: darwin-arm64
 
-          - os: macos-13
-            arch: x86_64
-            target: darwin
-            lib: encmanaged_pi.dylib
-            pkg_suffix: darwin-x86_64
-
           - os: ubuntu-24.04
             arch: x86_64
             target: linux-gtk3
             lib: encmanaged_pi.so
             pkg_suffix: linux-x86_64
+
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+            target: linux-gtk3
+            lib: encmanaged_pi.so
+            pkg_suffix: linux-aarch64
 
     steps:
       - uses: actions/checkout@v6
